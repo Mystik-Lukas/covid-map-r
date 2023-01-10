@@ -1,0 +1,5 @@
+"0",""
+"0","df <- rename(df, ""state"" = ""province_state"")"
+"0","df <- rename(df, ""total_tests"" = ""tests_combined_total"")"
+"0",""
+"0","df"

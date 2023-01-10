@@ -1,0 +1,84 @@
+---
+title: "Covid Test 2020 Data"
+author: "Lukas Canter"
+output: html_document
+---
+
+### Importing necessary packages 
+
+```{r setup, include=F}
+library(tidyverse)
+library(RColorBrewer)
+```
+
+### Load the csv data and test that it loaded
+
+```{r}
+df = read.csv('data.csv')
+head(df)
+```
+
+### Clean up the data
+1. Remove empty string states
+1. Remove rows that have NA tests
+1. Select the state and test amount, the rest get ignored
+1. Group by the state
+1. Get the max of every total (max of every total = the complete total for that state)
+1. Remove states with a 0 total (0 total = no data)
+
+
+```{r}
+
+df <- df %>% 
+  filter(province_state != "") %>%                                #1
+  filter(!is.na(tests_combined_total)) %>%                        #2
+  select(province_state, tests_combined_total) %>%                #3
+  group_by(province_state) %>%                                    #4
+  summarize(tests_combined_total = max(tests_combined_total)) %>% #5
+  filter(tests_combined_total != 0)                               #6
+
+df
+```
+
+### Rename columns
+
+- province_state --> state
+- tests_combined_total --> total_tests
+
+```{r}
+
+df <- rename(df, "state" = "province_state")
+df <- rename(df, "total_tests" = "tests_combined_total")
+
+df
+
+```
+
+### Map it
+
+```{r}
+
+library(usmap)
+library(plotly)
+
+map <- plot_usmap(data = df, values = "total_tests", color = "grey") +
+  scale_fill_continuous(
+    low = "white", high = "#46e8fa", name = "Covid Tests by State (2020)", label = scales::comma
+  ) + theme(legend.position = "left")
+
+map
+
+```
+
+### Make it interactive
+
+```{r}
+
+df$text <- paste(df$state, "<br>Total Tests: ", df$total_tests)
+
+map_plotly <- ggplotly(map)
+map_plotly
+
+```
+
+# Finished map

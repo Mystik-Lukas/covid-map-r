@@ -1,0 +1,5 @@
+"0",""
+"0","df$text <- paste(df$state, ""<br>Total Tests: "", df$total_tests)"
+"0",""
+"0","map_plotly <- ggplotly(map)"
+"0","map_plotly"
